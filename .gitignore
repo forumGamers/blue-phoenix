@@ -35,3 +35,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .env
+
+/src/types/*_pb.d.ts
+
+/src/proto/*_pb.js

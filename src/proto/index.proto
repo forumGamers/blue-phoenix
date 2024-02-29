@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package room;
+
+service RoomService {
+  rpc CreateRoom(CreateRoomInput) returns (Room) {}
+}
+
+message Room {
+  string type = 1;
+  repeated UserRoom users = 2;
+  string description = 3;
+  optional string image = 4;
+  optional string imageId = 5;
+  optional string name = 6;
+  optional string owner = 7;
+  string _id = 8;
+  repeated Chat chat = 9;
+}
+
+message UserRoom {
+  string userId = 1;
+  string addedAt = 2;
+  string role = 3;
+}
+
+message Chat {
+  string _id = 1;
+  string senderId = 2;
+  string message = 3;
+  optional string image = 4;
+  optional string imageId = 5;
+  optional string mediaType = 6;
+  bool isRead = 7;
+  string status = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
+}
+
+message CreateRoomInput {
+  repeated string users = 1;
+  optional string description = 2;
+  optional string name = 3;
+  optional FileInput file = 4;
+}
+
+message FileInput {
+  string fieldname = 1;
+  string originalname = 2;
+  string encoding = 3;
+  string mimetype = 4;
+  int64 size = 5;
+  bytes buffer = 6;
+  string filename = 7;
+}
