@@ -1,4 +1,4 @@
-import  Imagekit from 'imagekit';
+import Imagekit from 'imagekit';
 import {
   Injectable,
   Module,

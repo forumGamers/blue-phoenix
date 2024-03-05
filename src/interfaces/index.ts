@@ -1,9 +1,7 @@
 export interface FileInput {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
+  contentType: string;
   size: number;
-  buffer: Buffer;
+  content: Buffer;
   filename: string;
+  header: string;
 }

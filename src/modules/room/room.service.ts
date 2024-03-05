@@ -9,4 +9,8 @@ export class RoomService {
     @InjectModel('Room')
     private readonly roomRepo: Model<RoomChatDocument>,
   ) {}
+
+  public async createRoom(data: RoomChatDocument) {
+    return await this.roomRepo.create(data);
+  }
 }

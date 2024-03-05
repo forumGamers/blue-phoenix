@@ -21,21 +21,15 @@ export default abstract class BaseValidation {
   }
 
   protected fileInputSchema = {
-    fieldname: yup.string().optional().default("N/A"),
-    originalname: yup.string().optional().default("N/A"),
-    encoding: yup
-      .string()
-      .required("encoding is required")
-      .oneOf(Object.values(encodingFile), "Invalid Encoding"),
-    mimetype: yup
-      .string()
-      .required("mimetype is required")
-      .oneOf(Object.values(mimetypeFile), "Invalid Mimetype"),
+    header: yup.string().required("header is required"),
+    contentType: yup.string().required("contentType is required"),
     size: yup.number().required("size is required"),
-    buffer: yup
+    content: yup
       .mixed()
-      .required("buffer is required")
-      .test("is buffer", "value must be buffer", (val) => Buffer.isBuffer(val)),
+      .required("content is required")
+      .test("is content", "value must be buffer", (val) =>
+        Buffer.isBuffer(val)
+      ),
     filename: yup.string().optional().default("N/A"),
   };
 }

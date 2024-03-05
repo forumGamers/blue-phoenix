@@ -7,6 +7,7 @@ import { RoomService } from "./room.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { RoomChatSchema } from "../../models/room.schema";
 import { RoomValidator } from "./room.validation";
+import { UploadFileService } from "../../lib/imagekit.lib";
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { RoomValidator } from "./room.validation";
       },
     ]),
   ],
-  providers: [RoomService, RoomValidator],
+  providers: [RoomService, RoomValidator, UploadFileService],
   controllers: [RoomController],
 })
 export class RoomModule {}

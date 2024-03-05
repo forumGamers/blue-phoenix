@@ -41,15 +41,13 @@ message CreateRoomInput {
   repeated string users = 1;
   optional string description = 2;
   optional string name = 3;
-  optional FileInput file = 4;
+  optional FileHeader file = 4;
 }
 
-message FileInput {
-  string fieldname = 1;
-  string originalname = 2;
-  string encoding = 3;
-  string mimetype = 4;
-  int64 size = 5;
-  bytes buffer = 6;
-  string filename = 7;
+message FileHeader {
+  string filename = 1;
+  string contentType = 2;
+  uint64 size = 3;
+  repeated string header = 4;
+  bytes content = 5;
 }
