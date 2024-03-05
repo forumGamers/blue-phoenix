@@ -6,6 +6,7 @@ service RoomService {
   rpc CreateRoom(CreateRoomInput) returns (Room) {}
   rpc DeleteUser(UserRoomInput) returns (Message) {}
   rpc LeaveRoom(RoomId) returns (Message) {}
+  rpc SetAdmin(UserRoomInput) returns (RepeatedUserRoom) {}
 }
 
 message Room {
@@ -24,6 +25,10 @@ message UserRoom {
   string userId = 1;
   string addedAt = 2;
   string role = 3;
+}
+
+message RepeatedUserRoom {
+  repeated UserRoom users = 1;
 }
 
 message Message {
