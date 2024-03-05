@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";
 import { ROOM_PACKAGE } from "../../constants/room.constant";
-import { grpcClientOpts } from "../../config/grpc.config";
+import { grpcClientOptions } from "../../config/grpc.config";
 import { RoomController } from "./room.controller";
 import { RoomService } from "./room.service";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -14,7 +14,7 @@ import { UploadFileService } from "../../lib/imagekit.lib";
     ClientsModule.register([
       {
         name: ROOM_PACKAGE,
-        ...grpcClientOpts,
+        ...grpcClientOptions,
       },
     ]),
     MongooseModule.forFeature([

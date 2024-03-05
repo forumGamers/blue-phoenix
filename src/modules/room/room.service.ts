@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { type Model } from 'mongoose';
+import { type Model, Types } from 'mongoose';
 import type { RoomChatDocument } from '../../models/room.schema';
 
 @Injectable()
@@ -12,5 +12,16 @@ export class RoomService {
 
   public async createRoom(data: RoomChatDocument) {
     return await this.roomRepo.create(data);
+  }
+
+  public async findById(id: Types.ObjectId | string) {
+    return (await this.roomRepo.findById(id)) as RoomChatDocument | null;
+  }
+
+  public async pullUser(roomId: Types.ObjectId, userId: string) {
+    return await this.roomRepo.findOneAndUpdate(
+      { _id: roomId },
+      {$pull: {   users: {userId,},},},
+    );
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import BaseValidation from "../../base/validation.base";
 import * as yup from "yup";
-import type { CreateRoomInput } from "../../interfaces/room";
+import type { CreateRoomInput, DeleteUserInput } from "../../interfaces/room";
 
 @Injectable()
 export class RoomValidator extends BaseValidation {
@@ -24,4 +24,13 @@ export class RoomValidator extends BaseValidation {
       data
     );
   }
+
+  public validateDeleteUser = async (data: any) =>
+    await this.validate<DeleteUserInput>(
+      yup.object().shape({
+        roomId: yup.string().required("roomId is required"),
+        userId: yup.string().required("userId is required"),
+      }),
+      data
+    );
 }

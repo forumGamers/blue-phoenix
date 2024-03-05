@@ -1,3 +1,5 @@
+import { Status } from "@grpc/grpc-js/build/src/constants";
+import { RpcException } from "@nestjs/microservices";
 import { JwtPayload, verify, decode, DecodeOptions } from "jsonwebtoken";
 
 export interface jwtValue extends JwtPayload {
@@ -7,7 +9,14 @@ export interface jwtValue extends JwtPayload {
 
 export default new (class JWT {
   public verifyToken(token: string) {
-    return verify(token, process.env.SECRET) as jwtValue;
+    try {
+      return verify(token, process.env.SECRET) as jwtValue;
+    } catch (err) {
+      throw new RpcException({
+        message: "missing or invalid token",
+        code: Status.UNAUTHENTICATED,
+      });
+    }
   }
 
   public decodeToken(token: string, opts?: DecodeOptions) {

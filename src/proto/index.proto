@@ -4,6 +4,7 @@ package room;
 
 service RoomService {
   rpc CreateRoom(CreateRoomInput) returns (Room) {}
+  rpc DeleteUser(UserRoomInput) returns (Message) {}
 }
 
 message Room {
@@ -22,6 +23,10 @@ message UserRoom {
   string userId = 1;
   string addedAt = 2;
   string role = 3;
+}
+
+message Message {
+  string message = 1;
 }
 
 message Chat {
@@ -50,4 +55,9 @@ message FileHeader {
   uint64 size = 3;
   repeated string header = 4;
   bytes content = 5;
+}
+
+message UserRoomInput {
+  string userId = 1;
+  string roomId = 2;
 }

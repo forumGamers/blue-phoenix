@@ -1,8 +1,7 @@
-import { Controller, UseInterceptors } from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 import { GrpcMethod, RpcException } from "@nestjs/microservices";
 import { ROOM_SERVICE } from "../../constants/room.constant";
 import { ROOM_SERVICE_METHOD } from "../../enum/room.enum";
-import { AuthenticationInterceptor } from "../../middlewares/authentication.middleware";
 import type { Metadata } from "@grpc/grpc-js";
 import { RoomService } from "./room.service";
 import { RoomValidator } from "./room.validation";
@@ -10,6 +9,8 @@ import type { RoomChatDocument } from "../../models/room.schema";
 import { UploadFileService } from "../../lib/imagekit.lib";
 import type { RoomRole } from "../../interfaces/schema";
 import { Status } from "@grpc/grpc-js/build/src/constants";
+import helpers from "../../helpers";
+import { Types } from "mongoose";
 
 @Controller()
 export class RoomController {
@@ -20,7 +21,6 @@ export class RoomController {
   ) {}
 
   @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.CREATEROOM)
-  @UseInterceptors(AuthenticationInterceptor)
   public async createRoom(data: any, metadata: Metadata) {
     const [UUID] = metadata.get("UUID") as string[];
     const {
@@ -75,5 +75,58 @@ export class RoomController {
     payload.chats = [];
 
     return await this.roomService.createRoom(payload);
+  }
+
+  @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.DELETEUSER)
+  public async deleteUser(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { roomId, userId } = await this.roomValidation.validateDeleteUser(
+      payload
+    );
+
+    if (UUID === userId)
+      throw new RpcException({
+        message: "cannot self delete",
+        code: Status.PERMISSION_DENIED,
+      });
+
+    const roomObjectId = new Types.ObjectId(roomId);
+
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: "data not found",
+        code: Status.NOT_FOUND,
+      });
+
+    if (
+      data.users.find((el) => el.userId === UUID)?.role !== "Admin" ||
+      data.owner !== UUID ||
+      data.type === "Private"
+    )
+      throw new RpcException({
+        message: "Forbidden",
+        code: Status.PERMISSION_DENIED,
+      });
+
+    const user = data.users.find((user) => user.userId === userId);
+    if (!user)
+      throw new RpcException({
+        message: "User not found",
+        code: Status.NOT_FOUND,
+      });
+
+    if (
+      data.users.find((el) => el.userId === user.userId)?.role === "Admin" &&
+      data.owner !== UUID
+    )
+      throw new RpcException({
+        message: "Cannot delete admin",
+        code: Status.PERMISSION_DENIED,
+      });
+
+    await this.roomService.pullUser(roomObjectId, userId);
+
+    return { message: "success" };
   }
 }

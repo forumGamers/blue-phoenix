@@ -26,7 +26,7 @@ export class AuthenticationInterceptor implements NestInterceptor {
 
     const { UUID, loggedAs } = jwt.verifyToken(access_token[0]);
 
-    metadata.set('UUID',UUID)
+    metadata.set('UUID', UUID);
     metadata.set('loggedAs', loggedAs);
 
     return next.handle().pipe();

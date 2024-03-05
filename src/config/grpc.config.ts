@@ -1,10 +1,10 @@
+import { type ClientOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { config } from 'dotenv';
-import { type ClientOptions, Transport } from '@nestjs/microservices';
 
 config();
 
-export const grpcClientOpts: ClientOptions = {
+export const grpcClientOptions: ClientOptions = {
   transport: Transport.GRPC,
   options: {
     package: 'room',

@@ -6,3 +6,8 @@ export interface CreateRoomInput {
   name?: string;
   file?: FileInput | null;
 }
+
+export interface DeleteUserInput {
+  userId: string;
+  roomId: string;
+}
