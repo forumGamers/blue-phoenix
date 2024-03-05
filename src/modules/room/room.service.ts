@@ -32,12 +32,16 @@ export class RoomService {
     return await this.roomRepo.findOneAndUpdate({ _id }, query);
   }
 
-  public async updateUserRole(_id: Types.ObjectId, idx: number) {
+  public async updateUserRole(
+    _id: Types.ObjectId,
+    idx: number,
+    status: 'Admin' | 'Member',
+  ) {
     return await this.roomRepo.findOneAndUpdate(
       { _id },
       {
         $set: {
-          [`users.${idx}.role`]: 'Admin',
+          [`users.${idx}.role`]: status,
         },
       },
     );

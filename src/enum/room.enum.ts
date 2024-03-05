@@ -3,4 +3,5 @@ export enum ROOM_SERVICE_METHOD {
   DELETEUSER = "DeleteUser",
   LEAVEROOM = "LeaveRoom",
   SETADMIN = "SetAdmin",
+  DOWNADMIN = "DownAdmin",
 }

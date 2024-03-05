@@ -7,6 +7,7 @@ service RoomService {
   rpc DeleteUser(UserRoomInput) returns (Message) {}
   rpc LeaveRoom(RoomId) returns (Message) {}
   rpc SetAdmin(UserRoomInput) returns (RepeatedUserRoom) {}
+  rpc DownAdmin(UserRoomInput) returns (RepeatedUserRoom) {}
 }
 
 message Room {

@@ -28,7 +28,7 @@ export class RoomValidator extends BaseValidation {
   public validateDeleteUser = async (data: any) =>
     await this.validate<DeleteUserInput>(
       yup.object().shape({
-        roomId: yup.string().required("roomId is required"),
+        roomId: this.validateRequiredObjectId("roomId"),
         userId: yup.string().required("userId is required"),
       }),
       data

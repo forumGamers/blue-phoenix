@@ -215,7 +215,59 @@ export class RoomController {
         code: Status.ALREADY_EXISTS,
       });
 
-    const result = await this.roomService.updateUserRole(roomObjectId, target);
+    const result = await this.roomService.updateUserRole(
+      roomObjectId,
+      target,
+      'Admin',
+    );
+    if (!result)
+      throw new RpcException({
+        message: 'data not found',
+        code: Status.NOT_FOUND,
+      });
+
+    return { users: result.users };
+  }
+
+  @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.DOWNADMIN)
+  public async downAdmin(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { userId, roomId } =
+      await this.roomValidation.validateDeleteUser(payload);
+
+    const roomObjectId = new Types.ObjectId(roomId);
+
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: 'data not found',
+        code: Status.NOT_FOUND,
+      });
+
+    if (data.type === 'Private')
+      throw new RpcException({
+        message: 'cannot set admin in private room',
+        code: Status.PERMISSION_DENIED,
+      });
+
+    if (data.owner !== UUID || userId === UUID)
+      throw new RpcException({
+        message: 'Forbidden',
+        code: Status.PERMISSION_DENIED,
+      });
+
+    const idx = data.users.findIndex((el) => el.userId === userId);
+    if (idx === -1)
+      throw new RpcException({
+        message: 'user not found',
+        code: Status.NOT_FOUND,
+      });
+
+    const result = await this.roomService.updateUserRole(
+      roomObjectId,
+      idx,
+      'Member',
+    );
     if (!result)
       throw new RpcException({
         message: 'data not found',
