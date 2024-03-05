@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { RpcException } from "@nestjs/microservices";
 import { Status } from "@grpc/grpc-js/build/src/constants";
-import { encodingFile, mimetypeFile } from "../constants";
+import { isValidObjectId } from "mongoose";
 
 export default abstract class BaseValidation {
   protected async validate<T = any>(schema: yup.Schema, data: any): Promise<T> {
@@ -32,4 +32,12 @@ export default abstract class BaseValidation {
       ),
     filename: yup.string().optional().default("N/A"),
   };
+
+  protected validateRequiredObjectId = (field: string) =>
+    yup
+      .string()
+      .required(`${field} is required`)
+      .test("is valid ObjectId", "invalid ObjectId", (val) =>
+        isValidObjectId(val)
+      );
 }

@@ -10,7 +10,7 @@ import { UploadFileService } from "../../lib/imagekit.lib";
 import type { RoomRole } from "../../interfaces/schema";
 import { Status } from "@grpc/grpc-js/build/src/constants";
 import helpers from "../../helpers";
-import { Types } from "mongoose";
+import { Types,type UpdateQuery } from "mongoose";
 
 @Controller()
 export class RoomController {
@@ -126,6 +126,55 @@ export class RoomController {
       });
 
     await this.roomService.pullUser(roomObjectId, userId);
+
+    return { message: "success" };
+  }
+
+  @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.LEAVEROOM)
+  public async leaveRoom(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { roomId } = await this.roomValidation.validateRoomId(payload);
+
+    const roomObjectId = new Types.ObjectId(roomId);
+
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: "data not found",
+        code: Status.NOT_FOUND,
+      });
+
+    if (data.type === "Private")
+      throw new RpcException({
+        message: "cannot leave private room",
+        code: Status.PERMISSION_DENIED,
+      });
+
+      const query: UpdateQuery<RoomChatDocument> = {
+        $pull: {
+          users: {
+            userId: UUID,
+          },
+        },
+      };
+
+      if (data.owner === UUID) {
+        for (let i = data.users.length - 1; i >= 0; i--)
+          if (data.users[i].role === "Admin") {
+            query.$set = {
+              owner: data.users[i].userId,
+            };
+            break;
+          }
+
+        if (!query.$set)
+          throw new RpcException({
+            message: "please set a admin first",
+            code: Status.ABORTED,
+          });
+      }
+
+    await this.roomService.updateByQuery(roomObjectId,query)
 
     return { message: "success" };
   }

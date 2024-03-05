@@ -33,4 +33,12 @@ export class RoomValidator extends BaseValidation {
       }),
       data
     );
+
+  public validateRoomId = async (data: any) =>
+    await this.validate<{ roomId: string }>(
+      yup.object().shape({
+        roomId: this.validateRequiredObjectId("roomId"),
+      }),
+      data
+    );
 }
