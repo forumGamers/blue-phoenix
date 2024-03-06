@@ -335,20 +335,17 @@ export class RoomController {
     return {
       ...(data as any)._doc,
       chats: undefined,
-          media: data.chats
-            .filter(
-              (el) =>
-                el.mediaType &&
-                el.image &&
-                el.imageId &&
-                el.status !== "deleted"
-            )
-            .map((el) => ({
-              image: el.image,
-              imageId: el.imageId,
-              mediaType: el.mediaType,
-              senderId: el.senderId,
-            })),
-    }
+      media: data.chats
+        .filter(
+          (el) =>
+            el.mediaType && el.image && el.imageId && el.status !== 'deleted',
+        )
+        .map((el) => ({
+          image: el.image,
+          imageId: el.imageId,
+          mediaType: el.mediaType,
+          senderId: el.senderId,
+        })),
+    };
   }
 }
