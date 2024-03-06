@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import BaseValidation from "../../base/validation.base";
-import type { CreateChatInput } from "../../interfaces/chat";
+import type { CreateChatInput, SetReadInput } from "../../interfaces/chat";
 import * as yup from "yup";
 
 @Injectable()
@@ -19,6 +19,19 @@ export class ChatValidator extends BaseValidation {
           "must provided message or file",
           ({ file, message }) => !!message || !!file
         ),
+      data
+    );
+  }
+
+  public async validateSetRead(data: any) {
+    return await this.validate<SetReadInput>(
+      yup.object().shape({
+        roomId: this.validateRequiredObjectId("roomId"),
+        chatIds: yup
+          .array()
+          .of(yup.string().required("ids is required"))
+          .min(1, "minimum chatIds length is 1"),
+      }),
       data
     );
   }

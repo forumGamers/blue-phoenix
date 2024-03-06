@@ -72,4 +72,35 @@ export class ChatController {
 
     return chat;
   }
+
+  @GrpcMethod(CHAT_SERVICE, CHAT_SERVICE_METHOD.SETREAD)
+  public async setRead(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { roomId, chatIds } = await this.chatValidator.validateSetRead(
+      payload
+    );
+
+    const roomObjectId = new Types.ObjectId(roomId);
+
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: "data not found",
+        code: Status.NOT_FOUND,
+      });
+
+    const query: any = {
+      $set: {},
+    };
+
+    for (const chatId of chatIds) {
+      const idx = data.chats.findIndex((el) => el._id.toString() === chatId);
+      if (idx !== -1 && data.chats[idx].senderId !== UUID)
+        query.$set[`chats.${idx}.isRead`] = true;
+    }
+
+    await this.roomService.updateByQuery(roomObjectId, query);
+
+    return { message: "success" };
+  }
 }

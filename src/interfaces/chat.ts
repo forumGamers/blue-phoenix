@@ -5,3 +5,8 @@ export interface CreateChatInput {
   message?: string;
   file?: FileInput | null;
 }
+
+export interface SetReadInput {
+  roomId: string;
+  chatIds: string[];
+}
