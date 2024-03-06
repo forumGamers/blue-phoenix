@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package global;
 
+import "google/protobuf/any.proto";
+
 message Room {
   string type = 1;
   repeated UserRoom users = 2;
@@ -47,4 +49,19 @@ message FileHeader {
   uint64 size = 3;
   repeated string header = 4;
   bytes content = 5;
+}
+
+message DataWithMetadata {
+  int64 totalData = 1;
+  int32 limit = 2;
+  int32 page = 3;
+  int32 totalPage = 4;
+  google.protobuf.Any data = 5;
+}
+
+message NoArgument {}
+
+message Pagination {
+  int32 page = 1;
+  int32 limit = 2;
 }

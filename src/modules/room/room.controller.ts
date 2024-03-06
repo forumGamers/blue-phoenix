@@ -276,4 +276,40 @@ export class RoomController {
 
     return { users: result.users };
   }
+
+  @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.GETUSERROOM)
+  public async getUserRoom(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { page, limit } =
+      await this.roomValidation.validateBasePagination(payload);
+
+    const { data, total } = await this.roomService.getUserRoom(
+      UUID,
+      (page - 1) * limit,
+      limit,
+    );
+    if (!total)
+      throw new RpcException({
+        message: 'data not found',
+        code: Status.NOT_FOUND,
+      });
+
+    return {
+      ...helpers.getMetadata(total, page, limit),
+      data:{
+        Group: data
+          .filter((el) => el._id === "Group")
+          .map((el) => ({
+            ...el,
+            data: helpers.decryptChats(data),
+          })),
+        Private: data
+          .filter((el) => el._id === "Private")
+          .map((el) => ({
+            ...el,
+            data: helpers.decryptChats(data),
+          })),
+      },
+    };
+  }
 }

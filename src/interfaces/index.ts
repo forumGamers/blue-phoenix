@@ -5,3 +5,8 @@ export interface FileInput {
   filename: string;
   header: string;
 }
+
+export interface BasePaginationInput {
+  page: number;
+  limit: number;
+}

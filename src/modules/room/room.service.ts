@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { type Model, Types, type UpdateQuery } from 'mongoose';
 import type { RoomChatDocument } from '../../models/room.schema';
 import type { ChatAttributes } from '../../interfaces/schema';
+import type { ListRoom } from 'src/interfaces/room';
 
 @Injectable()
 export class RoomService {
@@ -89,20 +90,77 @@ export class RoomService {
     );
   }
 
-  public async deleteChatMsg(
-    _id: Types.ObjectId,
-    idx: number,
-  ) {
+  public async deleteChatMsg(_id: Types.ObjectId, idx: number) {
     return await this.roomRepo.findOneAndUpdate(
-      {_id},
+      { _id },
       {
-        $set:{
-          [`chats.${idx}.status`]: "deleted",
-        }
+        $set: {
+          [`chats.${idx}.status`]: 'deleted',
+        },
       },
       {
         new: true,
       },
-    )
+    );
+  }
+
+  public async getUserRoom(
+    userId: string,
+    $skip = 0,
+    $limit = 20,
+  ): Promise<ListRoom> {
+    try {
+      const [result] = await this.roomRepo.aggregate<ListRoom>([
+        {
+          $match: {
+            users: {
+              $elemMatch: { userId },
+            },
+          },
+        },
+        {
+          $facet: {
+            data: [
+              { $skip },
+              { $limit },
+              {
+                $project: {
+                  type: 1,
+                  users: {
+                    $slice: ['$users.userId', 0, 5],
+                  },
+                  image: 1,
+                  name: 1,
+                  chats: {
+                    $slice: ['$chats', 0, 15],
+                  },
+                },
+              },
+            ],
+            total: [{ $count: 'total' }],
+          },
+        },
+        { $unwind: '$total' },
+        { $unwind: '$data' },
+        {
+          $group: {
+            _id: '$data.type',
+            data: {
+              $push: '$$ROOT.data',
+            },
+            total: {
+              $first: '$total.total',
+            },
+          },
+        },
+      ]);
+      return result;
+    } catch (err) {
+      return {
+        _id: '',
+        data: [],
+        total: 0,
+      };
+    }
   }
 }
