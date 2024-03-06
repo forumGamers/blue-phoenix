@@ -16,3 +16,8 @@ export interface UpdateMsgInput {
   chatId: string;
   message: string;
 }
+
+export interface DeleteMsgInput {
+  roomId: string;
+  chatId: string;
+}

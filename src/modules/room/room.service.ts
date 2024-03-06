@@ -88,4 +88,21 @@ export class RoomService {
       },
     );
   }
+
+  public async deleteChatMsg(
+    _id: Types.ObjectId,
+    idx: number,
+  ) {
+    return await this.roomRepo.findOneAndUpdate(
+      {_id},
+      {
+        $set:{
+          [`chats.${idx}.status`]: "deleted",
+        }
+      },
+      {
+        new: true,
+      },
+    )
+  }
 }

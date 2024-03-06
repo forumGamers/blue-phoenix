@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import BaseValidation from "../../base/validation.base";
 import type {
   CreateChatInput,
+  DeleteMsgInput,
   SetReadInput,
   UpdateMsgInput,
 } from "../../interfaces/chat";
@@ -46,6 +47,16 @@ export class ChatValidator extends BaseValidation {
         roomId: this.validateRequiredObjectId("roomId"),
         chatId: this.validateRequiredObjectId("chatId"),
         message: yup.string().required("message is required"),
+      }),
+      data
+    );
+  }
+
+  public async validateDeleteMsg(data: any) {
+    return await this.validate<DeleteMsgInput>(
+      yup.object().shape({
+        roomId: this.validateRequiredObjectId("roomId"),
+        chatId: this.validateRequiredObjectId("chatId"),
       }),
       data
     );
