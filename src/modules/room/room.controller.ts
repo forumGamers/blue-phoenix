@@ -296,20 +296,59 @@ export class RoomController {
 
     return {
       ...helpers.getMetadata(total, page, limit),
-      data:{
+      data: {
         Group: data
-          .filter((el) => el._id === "Group")
+          .filter((el) => el._id === 'Group')
           .map((el) => ({
             ...el,
             data: helpers.decryptChats(data),
           })),
         Private: data
-          .filter((el) => el._id === "Private")
+          .filter((el) => el._id === 'Private')
           .map((el) => ({
             ...el,
             data: helpers.decryptChats(data),
           })),
       },
     };
+  }
+
+  @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.GETBYID)
+  public async findById(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const { roomId } = await this.roomValidation.validateRoomId(payload);
+
+    const roomObjectId = new Types.ObjectId(roomId);
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: 'data not found',
+        code: Status.NOT_FOUND,
+      });
+
+    if (!data.users.find((el) => el.userId === UUID))
+      throw new RpcException({
+        message: 'Forbidden',
+        code: Status.PERMISSION_DENIED,
+      });
+
+    return {
+      ...(data as any)._doc,
+      chats: undefined,
+          media: data.chats
+            .filter(
+              (el) =>
+                el.mediaType &&
+                el.image &&
+                el.imageId &&
+                el.status !== "deleted"
+            )
+            .map((el) => ({
+              image: el.image,
+              imageId: el.imageId,
+              mediaType: el.mediaType,
+              senderId: el.senderId,
+            })),
+    }
   }
 }

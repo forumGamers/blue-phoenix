@@ -5,4 +5,5 @@ export enum ROOM_SERVICE_METHOD {
   SETADMIN = "SetAdmin",
   DOWNADMIN = "DownAdmin",
   GETUSERROOM = "GetUserRoom",
+  GETBYID = "GetRoomById",
 }

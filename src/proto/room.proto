@@ -11,6 +11,7 @@ service RoomService {
   rpc SetAdmin(UserRoomInput) returns (global.RepeatedUserRoom) {}
   rpc DownAdmin(UserRoomInput) returns (global.RepeatedUserRoom) {}
   rpc GetUserRoom(global.Pagination) returns (global.DataWithMetadata) {}
+  rpc GetRoomById(RoomId) returns (global.Room) {}
 }
 
 message RoomId {
