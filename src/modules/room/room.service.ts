@@ -69,4 +69,23 @@ export class RoomService {
       },
     );
   }
+
+  public async updateChatMsg(
+    _id: Types.ObjectId,
+    idx: number,
+    message: string,
+  ) {
+    return await this.roomRepo.findOneAndUpdate(
+      { _id },
+      {
+        $set: {
+          [`chats.${idx}.message`]: message,
+          [`chats.${idx}.status`]: 'updated',
+        },
+      },
+      {
+        new: true,
+      },
+    );
+  }
 }

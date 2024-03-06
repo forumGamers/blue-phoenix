@@ -1,6 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import BaseValidation from "../../base/validation.base";
-import type { CreateChatInput, SetReadInput } from "../../interfaces/chat";
+import type {
+  CreateChatInput,
+  SetReadInput,
+  UpdateMsgInput,
+} from "../../interfaces/chat";
 import * as yup from "yup";
 
 @Injectable()
@@ -31,6 +35,17 @@ export class ChatValidator extends BaseValidation {
           .array()
           .of(yup.string().required("ids is required"))
           .min(1, "minimum chatIds length is 1"),
+      }),
+      data
+    );
+  }
+
+  public async validateEditMsg(data: any) {
+    return await this.validate<UpdateMsgInput>(
+      yup.object().shape({
+        roomId: this.validateRequiredObjectId("roomId"),
+        chatId: this.validateRequiredObjectId("chatId"),
+        message: yup.string().required("message is required"),
       }),
       data
     );

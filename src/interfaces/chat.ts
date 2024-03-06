@@ -10,3 +10,9 @@ export interface SetReadInput {
   roomId: string;
   chatIds: string[];
 }
+
+export interface UpdateMsgInput {
+  roomId: string;
+  chatId: string;
+  message: string;
+}

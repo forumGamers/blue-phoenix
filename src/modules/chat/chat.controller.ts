@@ -103,4 +103,44 @@ export class ChatController {
 
     return { message: "success" };
   }
+
+  @GrpcMethod(CHAT_SERVICE, CHAT_SERVICE_METHOD.EDITMESSAGE)
+  public async editMsg(payload: any, metadata: Metadata) {
+    const { UUID } = helpers.getUserFromMetadata(metadata);
+    const {
+      chatId,
+      roomId,
+      message,
+    } = await this.chatValidator.validateEditMsg(payload);
+
+    const roomObjectId = new Types.ObjectId(roomId);
+
+    const data = await this.roomService.findById(roomObjectId);
+    if (!data)
+      throw new RpcException({
+        message: "data not found",
+        code: Status.NOT_FOUND,
+      });
+
+    const chatIdx = data.chats.findIndex((el) => el._id.toString() === chatId);
+    if (chatIdx === -1)
+      throw new RpcException({
+        message: "chat not found",
+        code: Status.NOT_FOUND,
+      });
+
+    if (data.chats[chatIdx].senderId !== UUID)
+      throw new RpcException({
+        message: "Forbidden",
+        code: Status.PERMISSION_DENIED,
+      });
+
+    await this.roomService.updateChatMsg(
+      roomObjectId,
+      chatIdx,
+      encryption.encrypt(message)
+    );
+
+    return { message: "success" };
+  }
 }
