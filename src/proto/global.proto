@@ -1,14 +1,6 @@
 syntax = "proto3";
 
-package room;
-
-service RoomService {
-  rpc CreateRoom(CreateRoomInput) returns (Room) {}
-  rpc DeleteUser(UserRoomInput) returns (Message) {}
-  rpc LeaveRoom(RoomId) returns (Message) {}
-  rpc SetAdmin(UserRoomInput) returns (RepeatedUserRoom) {}
-  rpc DownAdmin(UserRoomInput) returns (RepeatedUserRoom) {}
-}
+package global;
 
 message Room {
   string type = 1;
@@ -28,18 +20,6 @@ message UserRoom {
   string role = 3;
 }
 
-message RepeatedUserRoom {
-  repeated UserRoom users = 1;
-}
-
-message Message {
-  string message = 1;
-}
-
-message RoomId {
-  string roomId = 1;
-}
-
 message Chat {
   string _id = 1;
   string senderId = 2;
@@ -53,11 +33,12 @@ message Chat {
   string updatedAt = 10;
 }
 
-message CreateRoomInput {
-  repeated string users = 1;
-  optional string description = 2;
-  optional string name = 3;
-  optional FileHeader file = 4;
+message Message {
+  string message = 1;
+}
+
+message RepeatedUserRoom {
+  repeated UserRoom users = 1;
 }
 
 message FileHeader {
@@ -66,9 +47,4 @@ message FileHeader {
   uint64 size = 3;
   repeated string header = 4;
   bytes content = 5;
-}
-
-message UserRoomInput {
-  string userId = 1;
-  string roomId = 2;
 }

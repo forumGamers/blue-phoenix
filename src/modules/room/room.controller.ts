@@ -22,7 +22,7 @@ export class RoomController {
 
   @GrpcMethod(ROOM_SERVICE, ROOM_SERVICE_METHOD.CREATEROOM)
   public async createRoom(data: any, metadata: Metadata) {
-    const [UUID] = metadata.get('UUID') as string[];
+    const { UUID } = helpers.getUserFromMetadata(metadata);
     const { users, name, description, file } =
       await this.roomValidation.validateCreateRoom(data);
 

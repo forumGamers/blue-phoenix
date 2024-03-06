@@ -1,7 +1,8 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { type Model, Types, type UpdateQuery } from 'mongoose';
 import type { RoomChatDocument } from '../../models/room.schema';
+import type { ChatAttributes } from '../../interfaces/schema';
 
 @Injectable()
 export class RoomService {
@@ -22,6 +23,9 @@ export class RoomService {
     return await this.roomRepo.findOneAndUpdate(
       { _id: roomId },
       { $pull: { users: { userId } } },
+      {
+        new: true,
+      },
     );
   }
 
@@ -29,7 +33,9 @@ export class RoomService {
     _id: Types.ObjectId,
     query: UpdateQuery<RoomChatDocument>,
   ) {
-    return await this.roomRepo.findOneAndUpdate({ _id }, query);
+    return await this.roomRepo.findOneAndUpdate({ _id }, query, {
+      new: true,
+    });
   }
 
   public async updateUserRole(
@@ -43,6 +49,23 @@ export class RoomService {
         $set: {
           [`users.${idx}.role`]: status,
         },
+      },
+      {
+        new: true,
+      },
+    );
+  }
+
+  public async createChat(_id: Types.ObjectId, chat: ChatAttributes) {
+    return await this.roomRepo.findOneAndUpdate(
+      { _id },
+      {
+        $push: {
+          chats: chat,
+        },
+      },
+      {
+        new: true,
       },
     );
   }

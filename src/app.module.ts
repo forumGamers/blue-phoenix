@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { config } from "dotenv";
 import { RoomModule } from "./modules/room/room.module";
+import { ChatModule } from "./modules/chat/chat.module";
 
 config();
 
@@ -11,6 +12,7 @@ config();
       waitQueueTimeoutMS: 1000 * 30,
     }),
     RoomModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],

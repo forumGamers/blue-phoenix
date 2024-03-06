@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package chat;
+import "global.proto";
+
+service ChatService {
+  rpc CreateChat(CreateChatInput) returns (global.Chat) {}
+}
+
+message CreateChatInput {
+  string message = 1;
+  string roomId = 2;
+  optional global.FileHeader file = 3;
+}
